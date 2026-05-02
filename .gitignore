@@ -144,3 +144,4 @@ vite.config.ts.timestamp-*
 *.db
 plains-report-key-exala.pem
 db/plains.db
+aws setup.txt
