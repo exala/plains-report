@@ -24,14 +24,15 @@ let serviceToken = null;
 let bot = null; // initialized AFTER service account is ready — see race condition note below
 
 async function ensureServiceAccount() {
+  await db.initDb();
   let user = db.prepare("SELECT * FROM users WHERE username = 'telegram_bot'").get();
   if (!user) {
     const password = require('crypto').randomBytes(32).toString('hex');
     const hash = await bcrypt.hash(password, 10);
-    const result = db.prepare(
+    db.prepare(
       "INSERT INTO users (username, email, password_hash, is_admin) VALUES ('telegram_bot', 'bot@plainsreport.internal', ?, 1)"
     ).run(hash);
-    user = db.prepare('SELECT * FROM users WHERE id = ?').get(result.lastInsertRowid);
+    user = db.prepare("SELECT * FROM users WHERE username = 'telegram_bot'").get();
     console.log('Telegram service account created');
   }
   serviceToken = jwt.sign(
