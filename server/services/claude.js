@@ -203,7 +203,29 @@ const ORIGINAL_TYPE_MAP = {
   film_room: 'FILM_ROOM',
   report_card: 'REPORT_CARD',
   recruiting_board: 'RECRUITING_BOARD',
-  earl_vs_internet: 'EARL_VS_INTERNET'
+  earl_vs_internet: 'EARL_VS_INTERNET',
+  mailbag: 'MAILBAG'
 };
 
-module.exports = { enrichStory, generateOriginal, generateTrendTheme, ORIGINAL_TYPE_MAP };
+async function generateMailbag(question) {
+  const prompt = `Generate an Earl's Mailbag response for The Plains Report. A reader has submitted a question about Auburn football. Earl answers it with full analytical authority and his complete voice.
+
+  QUESTION: ${question}
+
+  Respond ONLY with valid JSON. No markdown, no backticks.
+
+  {
+    "earl_brief": "2-sentence setup of what the question is asking and why it matters",
+    "earl_take": "Earl's full answer — analytically specific, Auburn-focused, builds in his voice, gives a real answer not a dodge",
+    "impact_score": <1-10>,
+    "impact_label": "<MASSIVE|HIGH|NOTABLE|LOW>",
+    "topic_tag": "SEC",
+    "metadata": {
+      "headline": "Earl's Mailbag: [short description of the question]",
+      "question": "${question.replace(/"/g, '\\"')}"
+    }
+  }`;
+  return callClaude(prompt);
+}
+
+module.exports = { enrichStory, generateOriginal, generateTrendTheme, generateMailbag, ORIGINAL_TYPE_MAP };

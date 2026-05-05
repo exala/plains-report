@@ -9,25 +9,42 @@ const dbPath = path.isAbsolute(configuredDbPath)
   : path.resolve(projectRoot, configuredDbPath);
 
 let db = null;
+let dbWrapper = null;
+let initPromise = null;
 
 async function initDb() {
-  if (db) return db;
-  
-  const SQL = await initSqlJs();
-  
-  // Try to load existing database
-  if (fs.existsSync(dbPath)) {
-    const fileBuffer = fs.readFileSync(dbPath);
-    db = new SQL.Database(fileBuffer);
-  } else {
-    db = new SQL.Database();
+  if (db) {
+    if (!dbWrapper) {
+      dbWrapper = createDbWrapper();
+    }
+    return db;
   }
+  if (initPromise) return initPromise;
   
-  // Run pragmas manually
-  db.run('PRAGMA journal_mode = WAL');
-  db.run('PRAGMA foreign_keys = ON');
-  
-  return db;
+  initPromise = (async () => {
+    const SQL = await initSqlJs();
+
+    // Try to load existing database
+    if (fs.existsSync(dbPath)) {
+      const fileBuffer = fs.readFileSync(dbPath);
+      db = new SQL.Database(fileBuffer);
+    } else {
+      db = new SQL.Database();
+    }
+
+    // Run pragmas manually
+    db.run('PRAGMA journal_mode = WAL');
+    db.run('PRAGMA foreign_keys = ON');
+
+    dbWrapper = createDbWrapper();
+    return db;
+  })();
+
+  try {
+    return await initPromise;
+  } finally {
+    initPromise = null;
+  }
 }
 
 function getDb() {
@@ -107,25 +124,34 @@ function createDbWrapper() {
   };
 }
 
-let dbWrapper = null;
-
 async function getDbWrapper() {
   if (!dbWrapper) {
     await initDb();
-    dbWrapper = createDbWrapper();
   }
   return dbWrapper;
 }
 
-// Initialize on module load
-initDb().then(() => {
-  dbWrapper = createDbWrapper();
-}).catch(err => {
-  console.error('Failed to initialize database:', err);
-});
+function requireDbWrapper() {
+  if (!dbWrapper) {
+    throw new Error('Database not initialized. Call initDb() first.');
+  }
+  return dbWrapper;
+}
 
 module.exports = {
   getDbWrapper,
   initDb,
-  saveDb
+  saveDb,
+  prepare(sql) {
+    return requireDbWrapper().prepare(sql);
+  },
+  exec(sql) {
+    return requireDbWrapper().exec(sql);
+  },
+  close() {
+    return requireDbWrapper().close();
+  },
+  pragma(pragma) {
+    return requireDbWrapper().pragma(pragma);
+  }
 };

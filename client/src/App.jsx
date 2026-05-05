@@ -4,6 +4,7 @@ import Feed from './pages/Feed.jsx';
 import Saved from './pages/Saved.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import Article from './pages/Article.jsx';
 
 const GLOBAL_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Serif+Display&family=IBM+Plex+Sans:wght@300;400;500;600&family=Lora:ital,wght@1,400;1,600&display=swap');
@@ -28,19 +29,34 @@ const GLOBAL_CSS = `
   .pr-digest-card:hover { border-color: rgba(232,119,34,0.38); }
   .pr-read-more { color: #E87722; cursor: pointer; background: none; border: none; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; transition: opacity 0.15s ease; padding: 0; }
   .pr-read-more:hover { opacity: 0.7; }
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: #0A0F1A; }
-  ::-webkit-scrollbar-thumb { background: #1A2535; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #E87722; }
   .pr-auth-input { width: 100%; padding: 12px 16px; background: #0F1825; border: 1px solid #1A2535; border-radius: 6px; color: #F0EDE6; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.15s ease; }
   .pr-auth-input:focus { border-color: #E87722; }
   .pr-auth-btn { width: 100%; padding: 13px; background: #E87722; border: none; border-radius: 6px; color: #0A0F1A; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.15s ease; }
   .pr-auth-btn:hover { opacity: 0.88; }
   .pr-auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── PHASE 2: MOBILE RESPONSIVE ─────────────────────────── */
+  @media (max-width: 768px) {
+    .pr-feed-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .pr-filter-inner {
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding-bottom: 4px !important;
+      max-width: 100% !important;
+    }
+    .pr-digest-card {
+      padding: 18px 16px !important;
+    }
+    .pr-auth-input {
+      font-size: 16px !important;
+    }
+  }
 `;
 
 export const AuthContext = createContext(null);
-
 export function useAuth() { return useContext(AuthContext); }
 
 function ProtectedRoute({ children }) {
@@ -73,6 +89,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/feed" replace />} />
           <Route path="/feed" element={<Feed />} />
+          <Route path="/article/:id" element={<Article />} />
           <Route path="/saved" element={<ProtectedRoute><Saved /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

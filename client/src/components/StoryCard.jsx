@@ -2,6 +2,7 @@ import { useState } from 'react';
 import EarlTake from './EarlTake.jsx';
 import ScoreBar from './ScoreBar.jsx';
 import SourceDrawer from './SourceDrawer.jsx';
+import ShareButtons from './ShareButtons.jsx';
 
 const TAG_COLORS = {
   RECRUITING:     { bg: 'rgba(232,119,34,0.12)',  text: '#E87722' },
@@ -17,26 +18,37 @@ const TAG_COLORS = {
 
 export default function StoryCard({ article, isSaved, onSave, rawDescription }) {
   const [sourceOpen, setSourceOpen] = useState(false);
-  const tag = TAG_COLORS[article.topic_tag] || { bg: 'rgba(255,255,255,0.08)', text: '#F0EDE6' };
+  const isMassive = article.impact_score >= 9;
+  const tag = isMassive
+    ? { bg: 'rgba(239,68,68,0.15)', text: '#FC8181' }
+    : TAG_COLORS[article.topic_tag] || { bg: 'rgba(255,255,255,0.08)', text: '#F0EDE6' };
+
+  const cardStyle = {
+    padding: 22,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 14,
+    // MASSIVE treatment
+    ...(isMassive && {
+      border: '2px solid #E87722',
+      boxShadow: '0 0 24px rgba(232,119,34,0.25)',
+    })
+  };
 
   return (
-    <div className="pr-card" style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div className="pr-card" style={cardStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', background: tag.bg, color: tag.text, padding: '3px 9px', borderRadius: 3 }}>
-          {article.topic_tag}
+          {isMassive ? 'BREAKING' : article.topic_tag}
         </span>
         {onSave && (
-          <button
-            className={`pr-save-btn${isSaved ? ' saved' : ''}`}
-            onClick={() => onSave(article.id)}
-            title={isSaved ? 'Unsave' : 'Save'}
-          >
+          <button className={`pr-save-btn${isSaved ? ' saved' : ''}`} onClick={() => onSave(article.id)}>
             {isSaved ? '★' : '☆'}
           </button>
         )}
       </div>
 
-      <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 17, lineHeight: 1.35, color: '#F0EDE6', margin: 0 }}>
+      <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: isMassive ? 20 : 17, fontWeight: isMassive ? 700 : 400, lineHeight: 1.35, color: '#F0EDE6', margin: 0 }}>
         {article.headline}
       </h3>
 
@@ -45,7 +57,6 @@ export default function StoryCard({ article, isSaved, onSave, rawDescription }) 
       </p>
 
       <EarlTake text={article.earl_take} />
-
       <ScoreBar score={article.impact_score} label={article.impact_label} />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -59,12 +70,9 @@ export default function StoryCard({ article, isSaved, onSave, rawDescription }) 
         </button>
       </div>
 
-      <SourceDrawer
-        open={sourceOpen}
-        sourceName={article.source_name}
-        sourceUrl={article.source_url}
-        rawText={rawDescription}
-      />
+      <SourceDrawer open={sourceOpen} sourceName={article.source_name} sourceUrl={article.source_url} rawText={rawDescription} />
+
+      <ShareButtons articleId={article.id} earlTake={article.earl_take} topicTag={article.topic_tag} impactScore={article.impact_score} />
     </div>
   );
 }
