@@ -44,6 +44,14 @@ export default function ShareButtons({ articleId, earlTake, topicTag, impactScor
       >
         𝕏 Share
       </a>
+      <a
+        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ ...BTN_STYLE, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+      >
+        f Share
+      </a>
       <CopyButton label="Copy Link" onCopy={() => navigator.clipboard.writeText(articleUrl)} />
       <CopyButton label="Copy Earl's Take" onCopy={() => navigator.clipboard.writeText(earlTake || '')} />
     </div>
