@@ -3,7 +3,12 @@ const { getDbWrapper } = require('../db/db');
 const { generateOriginal, ORIGINAL_TYPE_MAP } = require('../services/claude');
 
 function getDateString() {
-  return new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  return new Date().toLocaleDateString('en-US', {
+    timeZone: 'America/Chicago',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
 }
 
 async function runOriginal(type) {

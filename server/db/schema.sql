@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS rss_sources (
 CREATE TABLE IF NOT EXISTS raw_articles (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   source_id INTEGER NOT NULL,
-  url_hash TEXT NOT NULL UNIQUE,
+  url_hash TEXT UNIQUE NOT NULL,
   url TEXT NOT NULL,
   headline TEXT NOT NULL,
   description TEXT,
@@ -71,3 +71,6 @@ CREATE TABLE IF NOT EXISTS trend_alerts (
   active INTEGER DEFAULT 1,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_raw_articles_url_hash
+ON raw_articles(url_hash);

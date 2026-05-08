@@ -9,12 +9,20 @@ async function fetchFeed(url) {
   const feed = await parser.parseURL(url);
   return feed.items
     .filter(item => item.link)
-    .map(item => ({
-      headline: (item.title || '').trim(),
-      description: (item.contentSnippet || item.summary || item.content || '').replace(/<[^>]+>/g, '').trim().slice(0, 1000),
-      url: item.link,
-      publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString()
-    }))
+    .map(item => {
+      const rawDate = item.pubDate || item.isoDate || null;
+      const publishedDate = rawDate ? new Date(rawDate) : null;
+
+      return {
+        headline: (item.title || '').trim(),
+        title: item.title,
+        description: (item.contentSnippet || item.summary || item.content || '').replace(/<[^>]+>/g, '').trim().slice(0, 1000),
+        url: item.link,
+        pubDate: item.pubDate || null,
+        isoDate: item.isoDate || null,
+        publishedAt: publishedDate && !isNaN(publishedDate.getTime()) ? publishedDate.toISOString() : null
+      };
+    })
     .filter(item => item.headline && item.url);
 }
 

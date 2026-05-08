@@ -132,7 +132,14 @@ export default function OriginalCard({ article, isSaved, onSave }) {
       <ScoreBar score={article.impact_score} label={article.impact_label} />
 
       <div style={{ fontSize: 11, color: '#3A4A5C' }}>
-        {new Date(article.published_at).toLocaleDateString()}
+        <span style={{ color: '#4A5A6A' }}>
+          {new Date(article.published_at).toLocaleDateString('en-US', {
+            timeZone: 'America/Chicago',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          })}
+        </span>
         {article.original_type === 'HISTORY' && meta.year && (
           <span style={{ marginLeft: 8, color: '#C084FC', fontWeight: 600 }}>— {meta.year}</span>
         )}

@@ -63,7 +63,14 @@ export default function StoryCard({ article, isSaved, onSave, rawDescription }) 
         <div style={{ fontSize: 11, color: '#3A4A5C' }}>
           <span style={{ color: '#6A7A8A', fontWeight: 500 }}>{article.source_name}</span>
           {article.source_name && <span style={{ margin: '0 6px', color: '#2A3A4C' }}>·</span>}
-          {new Date(article.published_at).toLocaleDateString()}
+          <span style={{ color: '#4A5A6A' }}>
+            {new Date(article.published_at).toLocaleDateString('en-US', {
+              timeZone: 'America/Chicago',
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric'
+            })}
+          </span>
         </div>
         <button className="pr-source-btn" onClick={() => setSourceOpen(p => !p)}>
           {sourceOpen ? 'HIDE SOURCE ↑' : 'VIEW SOURCE ↓'}

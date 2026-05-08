@@ -13,6 +13,26 @@ async function pollFeeds() {
       const items = await fetchFeed(source.url);
       for (const item of items) {
         const hash = hashUrl(item.url);
+
+        // DATE FILTER - skip articles older than 72 hours.
+        const rawDate = item.pubDate || item.isoDate || null;
+        if (!rawDate) {
+          console.log(`Skipping article with no date: ${item.title || item.headline}`);
+          continue;
+        }
+        const pubDate = new Date(rawDate);
+        if (isNaN(pubDate.getTime())) {
+          console.log(`Skipping article with unparseable date: ${item.title || item.headline}`);
+          continue;
+        }
+        const cutoff = new Date();
+        cutoff.setHours(cutoff.getHours() - 72);
+        if (pubDate < cutoff) {
+          console.log(`Skipping old article (${pubDate.toDateString()}): ${item.title || item.headline}`);
+          continue;
+        }
+
+        // DUPLICATE CHECK - skip articles already in database.
         const existing = db.prepare('SELECT id FROM raw_articles WHERE url_hash = ?').get(hash);
         if (existing) continue;
 
