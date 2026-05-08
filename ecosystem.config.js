@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'plains-report',
       script: 'server/index.js',
-      cwd: '/path/to/plains-report',
+      cwd: '/home/ubuntu/plains-report',
       env: { NODE_ENV: 'production', TZ: 'America/Chicago' },
       restart_delay: 3000,
       max_restarts: 10
@@ -11,7 +11,7 @@ module.exports = {
     {
       name: 'plains-telegram',
       script: 'server/telegram/bot.js',
-      cwd: '/path/to/plains-report',
+      cwd: '/home/ubuntu/plains-report',
       env: { NODE_ENV: 'production', TZ: 'America/Chicago' },
       restart_delay: 5000,
       max_restarts: 5,
