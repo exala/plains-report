@@ -57,7 +57,9 @@ function sendAlert(message) {
 }
 
 function reply(chatId, text) {
-  bot.sendMessage(chatId, text, { parse_mode: 'Markdown' });
+  return bot.sendMessage(chatId, text).catch(err => {
+    console.error('Telegram reply failed:', err.message);
+  });
 }
 
 function isAdmin(msg) {
@@ -145,7 +147,22 @@ function registerHandlers() {
 ensureServiceAccount().then(() => {
   // Initialize bot here — not at module load — so serviceToken is guaranteed set
   // before any command handler can fire
-  bot = new TelegramBot(TOKEN, { polling: true });
+  bot = new TelegramBot(TOKEN, {
+    polling: true,
+    request: {
+      family: 4,
+      timeout: 30000
+    }
+  });
+  bot.on('polling_error', err => {
+    console.error('Telegram polling failed:', err.message);
+    if (err.stack) console.error(err.stack);
+    if (err.errors) {
+      err.errors.forEach((inner, index) => {
+        console.error(`Telegram polling inner error ${index + 1}:`, inner.message || inner);
+      });
+    }
+  });
   registerHandlers();
   console.log(`Telegram bot active. Admin ID: ${ADMIN_ID}`);
 }).catch(err => {
