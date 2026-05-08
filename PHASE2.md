@@ -44,6 +44,7 @@ Replace/add the following files from this package into your existing plains-repo
 - client/src/components/EarlMeter.jsx
 - client/src/services/hashtags.js
 - client/public/robots.txt
+- client/.env
 
 **Updated client files (replace existing):**
 - client/src/App.jsx
@@ -72,6 +73,8 @@ npm install node-telegram-bot-api axios --workspace=server
 SITE_URL=https://yourdomain.com
 VITE_SITE_URL=https://yourdomain.com
 ```
+
+Add the above 2 environment variables in `client/.env` for the social sharing to work in later stages.
 
 Telegram vars are optional — skip if not using.
 
